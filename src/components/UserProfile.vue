@@ -8,10 +8,38 @@
       <div class="user-profile__follower-count">
         <strong>Followers: </strong> {{ followers }}
       </div>
+
+      <form action="" class="user-profile__create-post" @submit.prevent="createNewPost">
+        <label for="newPost">
+          <strong>New Post</strong>
+        </label>
+        <textarea id="newPost" rows="4" placeholder="Type the text" v-model="newPostContent"></textarea>
+
+        <div class="user-profile__create-post-type">
+          <label for="newPostType">
+            <strong>Type: </strong>
+          </label>
+
+          <select id="newPostType" v-model="selectedPostType">
+            <option :value="option.value" v-for="(option, index) in postTypes" :key="index">
+              {{ option.name }}
+            </option>
+          </select>
+
+        </div>
+
+        <button>Post!</button>
+      </form>
     </div>
 
-    <div class="user-profile__posts-wrapper">
-      <PostItem v-for="post in user.posts" :key="post.id" :username="user.username" :post="post" @favourite="toggleFavourite" />
+    <div class="user-profile__post-wrapper">
+      <PostItem 
+        v-for="post in user.posts" 
+        :key="post.id" 
+        :username="user.username" 
+        :post="post" 
+        @favourite="toggleFavourite" 
+      />
     </div>
   </div>
 </template>
@@ -28,6 +56,12 @@ export default {
 
   data() {
     return {
+      newPostContent: '',
+      selectedPostType: 'instant',
+      postTypes: [
+        { value: 'draft', name: 'Draft' },
+        { value: 'instant', name: 'Instant Post' }
+      ],
       followers: 0,
       user: {
         id: 1,
@@ -65,6 +99,17 @@ export default {
 
     toggleFavourite(id) {
       console.log(`Favourited Post #${id}`);
+    },
+
+    createNewPost() {
+      if (this.newPostContent && this.selectedPostType !== 'draft') {
+        this.user.posts.unshift({
+          id: this.user.posts.length + 1,
+          content: this.newPostContent,
+        });
+
+        this.newPostContent = '';
+      }
     }
   },
 
@@ -96,5 +141,22 @@ export default {
   color: #fff;
   font-weight: bold;
   text-align: center;
+  margin: 5px;
+}
+
+h1 {
+  margin: 0;
+}
+
+.user-profile__post-wrapper {
+  display: grid;
+  grid-gap: 10px;
+}
+
+.user-profile__create-post {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid black;
+  padding-top: 10px;
 }
 </style>

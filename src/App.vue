@@ -25,7 +25,6 @@ export default {
 }
 #app {
   padding: 10px;
-  margin: 5px;
   color: black;
 }
 </style>
