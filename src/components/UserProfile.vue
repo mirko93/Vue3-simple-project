@@ -9,9 +9,10 @@
         <strong>Followers: </strong> {{ followers }}
       </div>
 
-      <form action="" class="user-profile__create-post" @submit.prevent="createNewPost">
+      <form action="" class="user-profile__create-post" @submit.prevent="createNewPost" :class="{ '--exceeded': newPostCharacterCount > 100 }">
         <label for="newPost">
           <strong>New Post</strong>
+          ({{ newPostCharacterCount }}/180)
         </label>
         <textarea id="newPost" rows="4" placeholder="Type the text" v-model="newPostContent"></textarea>
 
@@ -87,8 +88,8 @@ export default {
   },
 
   computed: {
-    fullName() {
-      return `${this.user.firstName} ${this.user.lastName}`;
+    newPostCharacterCount() {
+      return this.newPostContent.length;
     }
   },
 
@@ -119,44 +120,51 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
 .user-profile {
   display: grid;
   grid-template-columns: 1fr 3fr;
   width: 100%;
+
+  .user-profile__user-panel {
+    display: flex;
+    flex-direction: column;
+    margin-right: 50px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 5px;
+    border: 1px solid #DFE3E8;
+
+    h1 {
+      margin: 0;
+    }
+
+    .user-profile__admin-badge {
+      background-color: tomato;
+      color: #fff;
+      font-weight: bold;
+      text-align: center;
+      margin: 5px;
+    }
+
+    .user-profile__create-post {
+      display: flex;
+      flex-direction: column;
+      border-top: 1px solid black;
+      padding-top: 10px;
+
+      &.--exceeded {
+        color: red;
+        border-color: red;
+      }
+    }
+  }
+
+  .user-profile__post-wrapper {
+    display: grid;
+    grid-gap: 10px;
+  }
 }
 
-.user-profile__user-panel {
-  display: flex;
-  flex-direction: column;
-  margin-right: 50px;
-  padding: 20px;
-  background-color: white;
-  border-radius: 5px;
-  border: 1px solid #DFE3E8;
-}
 
-.user-profile__admin-badge {
-  background-color: tomato;
-  color: #fff;
-  font-weight: bold;
-  text-align: center;
-  margin: 5px;
-}
-
-h1 {
-  margin: 0;
-}
-
-.user-profile__post-wrapper {
-  display: grid;
-  grid-gap: 10px;
-}
-
-.user-profile__create-post {
-  display: flex;
-  flex-direction: column;
-  border-top: 1px solid black;
-  padding-top: 10px;
-}
 </style>
