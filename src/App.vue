@@ -6,7 +6,7 @@
       </div>
 
       <div class="navigation__user">
-        {{ user.username }}
+        {{ state.user.username }}
       </div>
     </nav>
     <UserProfile />
@@ -14,6 +14,7 @@
 </template>
 
 <script>
+import { reactive } from 'vue';
 import UserProfile from './components/UserProfile.vue'
 
 export default {
@@ -23,11 +24,15 @@ export default {
     UserProfile,
   },
 
-  data() {
-    return {
+  setup() {
+    const state = reactive({
       user: {
         username: '_johnDoe_',
       }
+    });
+
+    return {
+      state
     }
   }
 }

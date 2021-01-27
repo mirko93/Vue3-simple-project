@@ -1,68 +1,43 @@
 <template>
   <div class="user-profile">
     <div class="user-profile__user-panel">
-      <h1 class="user-profile__username">@{{ user.username }}</h1>
+      <h1 class="user-profile__username">@{{ state.user.username }}</h1>
 
-      <div class="user-profile__admin-badge" v-if="user.isAdmin">Admin</div>
+      <div class="user-profile__admin-badge" v-if="state.user.isAdmin">Admin</div>
 
       <div class="user-profile__follower-count">
-        <strong>Followers: </strong> {{ followers }}
+        <strong>Followers: </strong> {{ state.followers }}
       </div>
 
-      <form action="" class="user-profile__create-post" @submit.prevent="createNewPost" :class="{ '--exceeded': newPostCharacterCount > 100 }">
-        <label for="newPost">
-          <strong>New Post</strong>
-          ({{ newPostCharacterCount }}/180)
-        </label>
-        <textarea id="newPost" rows="4" placeholder="Type the text" v-model="newPostContent"></textarea>
-
-        <div class="user-profile__create-post-type">
-          <label for="newPostType">
-            <strong>Type: </strong>
-          </label>
-
-          <select id="newPostType" v-model="selectedPostType">
-            <option :value="option.value" v-for="(option, index) in postTypes" :key="index">
-              {{ option.name }}
-            </option>
-          </select>
-
-        </div>
-
-        <button>Post!</button>
-      </form>
+      <CreatePostPanel @add-post="addPost" />
     </div>
 
     <div class="user-profile__post-wrapper">
       <PostItem 
-        v-for="post in user.posts" 
+        v-for="post in state.user.posts" 
         :key="post.id" 
-        :username="user.username" 
-        :post="post" 
-        @favourite="toggleFavourite" 
+        :username="state.user.username" 
+        :post="post"  
       />
     </div>
   </div>
 </template>
 
 <script>
+import { reactive } from 'vue';
 import PostItem from './PostItem';
+import CreatePostPanel from './CreatePostPanel';
 
 export default {
   name: 'UserProfile',
 
   components: {
     PostItem,
+    CreatePostPanel,
   },
 
-  data() {
-    return {
-      newPostContent: '',
-      selectedPostType: 'instant',
-      postTypes: [
-        { value: 'draft', name: 'Draft' },
-        { value: 'instant', name: 'Instant Post' }
-      ],
+  setup() {
+    const state = reactive({
       followers: 0,
       user: {
         id: 1,
@@ -76,47 +51,20 @@ export default {
           { id: 2, content: "Don't forget is subscribe." },
         ]
       }
+    });
+
+    function addPost(post) {
+      state.user.posts.unshift({
+        id: state.user.posts.length + 1,
+        content: post
+      });
+    }
+
+    return {
+      state,
+      addPost
     }
   },
-
-  watch: {
-    followers(newFollowerCount, oldFollowerCount) {
-      if (oldFollowerCount < newFollowerCount) {
-        console.log(`${this.user.username} has gained a follower!`);
-      }
-    }
-  },
-
-  computed: {
-    newPostCharacterCount() {
-      return this.newPostContent.length;
-    }
-  },
-
-  methods: {
-    followUser() {
-      this.followers++;
-    },
-
-    toggleFavourite(id) {
-      console.log(`Favourited Post #${id}`);
-    },
-
-    createNewPost() {
-      if (this.newPostContent && this.selectedPostType !== 'draft') {
-        this.user.posts.unshift({
-          id: this.user.posts.length + 1,
-          content: this.newPostContent,
-        });
-
-        this.newPostContent = '';
-      }
-    }
-  },
-
-  mounted() {
-    this.followUser();
-  }
 }
 </script>
 

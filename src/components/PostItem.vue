@@ -1,5 +1,5 @@
 <template>
-    <div class="post-item" @click="favouritePost(post.id)">
+    <div class="post-item">
         <div class="user-prfole__post">
             <div class="post-item__user">
                 @{{ username }}
@@ -27,12 +27,6 @@ export default {
             required: true
         }
     },
-
-    methods: {
-        favouritePost(id) {
-            this.$emit('favourite', id);
-        }
-    }
 }
 </script>
 
