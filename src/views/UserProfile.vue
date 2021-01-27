@@ -3,6 +3,8 @@
     <div class="user-profile__user-panel">
       <h1 class="user-profile__username">@{{ state.user.username }}</h1>
 
+      <h3>{{ userId }}</h3>
+
       <div class="user-profile__admin-badge" v-if="state.user.isAdmin">Admin</div>
 
       <div class="user-profile__follower-count">
@@ -24,9 +26,11 @@
 </template>
 
 <script>
-import { reactive } from 'vue';
-import PostItem from './PostItem';
-import CreatePostPanel from './CreatePostPanel';
+import { reactive, computed } from 'vue';
+import { useRoute } from 'vue-router';
+import { users } from '../assets/users';
+import PostItem from '../components/PostItem';
+import CreatePostPanel from '../components/CreatePostPanel';
 
 export default {
   name: 'UserProfile',
@@ -37,20 +41,12 @@ export default {
   },
 
   setup() {
+    const route = useRoute();
+    const userId = computed(() => route.params.userId);
+
     const state = reactive({
       followers: 0,
-      user: {
-        id: 1,
-        username: '_johnDoe_',
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'johndoe@email.com',
-        isAdmin: true,
-        posts: [
-          { id: 1, content: 'New Post Amazing!' },
-          { id: 2, content: "Don't forget is subscribe." },
-        ]
-      }
+      user: users[userId.value - 1] || users[0],
     });
 
     function addPost(post) {
@@ -62,7 +58,8 @@ export default {
 
     return {
       state,
-      addPost
+      addPost,
+      userId
     }
   },
 }
